@@ -1,20 +1,15 @@
 {
-  "name": "mailboxd",
+  "name": "api",
   "version": "1.0.0",
-  "description": "",
+  "description": "api routes for mailboxd",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "vinnykaushik",
   "license": "ISC",
-  "devDependencies": {
-    "prisma": "^6.5.0"
-  },
   "dependencies": {
     "@prisma/client": "^6.5.0",
-    "react": "^19.1.0",
-    "react-dom": "^19.1.0",
-    "react-scripts": "^5.0.1"
+    "prisma": "^6.5.0"
   }
 }
