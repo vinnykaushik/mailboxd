@@ -14,20 +14,22 @@ datasource db {
 }
 
 model Users {
-  user_id       Int        @id @default(autoincrement())
-  username      String     @unique
-  password_hash String
-  email         String     @unique
-  created_at    DateTime   @default(now())
-  Watchlist     Watchlist?
-  Reviews       Reviews[]
+  id         Int        @id @default(autoincrement())
+  first_name String
+  last_name  String
+  username   String     @unique
+  password   String
+  email      String     @unique
+  created_at DateTime   @default(now())
+  Watchlist  Watchlist?
+  Reviews    Reviews[]
 }
 
 model Watchlist {
   watchlist_id Int   @id @default(autoincrement())
   user_id      Int   @unique
   movie_ids    Int[]
-  User         Users @relation(fields: [user_id], references: [user_id])
+  User         Users @relation(fields: [user_id], references: [id])
 }
 
 model Reviews {
@@ -38,5 +40,5 @@ model Reviews {
   review_text String?
   created_at  DateTime  @default(now())
   updated_at  DateTime?
-  User        Users     @relation(fields: [user_id], references: [user_id])
+  User        Users     @relation(fields: [user_id], references: [id])
 }

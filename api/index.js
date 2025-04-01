@@ -42,7 +42,7 @@ app.get("/ping", (req, res) => {
 
 // register endpoint
 app.post("/register", async (req, res) => {
-  const { email, password, name, username } = req.body;
+  const { email, password, firstName, lastName, username } = req.body;
   const existingUserByEmail = await prisma.users.findUnique({
     where: { email },
   });
@@ -65,8 +65,20 @@ app.post("/register", async (req, res) => {
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const newUser = await prisma.users.create({
-    data: { email, password: hashedPassword, name, username },
-    select: { id: true, email: true, name: true, username: true },
+    data: {
+      email,
+      password: hashedPassword,
+      first_name: firstName,
+      last_name: lastName,
+      username,
+    },
+    select: {
+      id: true,
+      email: true,
+      first_name: true,
+      last_name: true,
+      username: true,
+    },
   });
 
   const payload = { userId: newUser.id };
@@ -98,7 +110,8 @@ app.post("/login", async (req, res) => {
   const userData = {
     id: user.id,
     email: user.email,
-    name: user.name,
+    firstName: user.firstName,
+    lastName: user.lastName,
     username: user.username,
   };
 
@@ -115,7 +128,13 @@ app.post("/logout", async (req, res) => {
 app.get("/me", requireAuth, async (req, res) => {
   const user = await prisma.users.findUnique({
     where: { id: req.userId },
-    select: { id: true, email: true, username: true, name: true },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      firstName: true,
+      lastName: true,
+    },
   });
   res.json(user);
 });
@@ -125,7 +144,13 @@ app.get("/me", requireAuth, async (req, res) => {
 // get all users endpoint
 app.get("/users", async (req, res) => {
   const users = await prisma.users.findMany({
-    select: { id: true, email: true, username: true, name: true },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      firstName: true,
+      lastName: true,
+    },
   });
   res.json(users);
 });
@@ -134,7 +159,13 @@ app.get("/users", async (req, res) => {
 app.get("/users/:id", async (req, res) => {
   const user = await prisma.users.findUnique({
     where: { id: parseInt(req.params.id) },
-    select: { id: true, email: true, username: true, name: true },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      firstName: true,
+      lastName: true,
+    },
   });
   if (!user) {
     return res.status(404).json({ error: "User not found" });
@@ -144,11 +175,17 @@ app.get("/users/:id", async (req, res) => {
 
 // update user by id endpoint
 app.put("/users/:id", requireAuth, async (req, res) => {
-  const { email, name } = req.body;
+  const { email, firstName, lastName, username } = req.body;
   const user = await prisma.users.update({
     where: { id: parseInt(req.params.id) },
-    data: { email, name },
-    select: { id: true, email: true, name: true },
+    data: { email, firstName, lastName, username },
+    select: {
+      id: true,
+      email: true,
+      username: true,
+      firstName: true,
+      lastName: true,
+    },
   });
   res.json(user);
 });
