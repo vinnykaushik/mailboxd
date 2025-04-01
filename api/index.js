@@ -35,6 +35,11 @@ function requireAuth(req, res, next) {
   }
 }
 
+// test ping endpoint
+app.get("/ping", (req, res) => {
+  res.send("pong");
+});
+
 // register endpoint
 app.post("/register", async (req, res) => {
   const { email, password, name, username } = req.body;
