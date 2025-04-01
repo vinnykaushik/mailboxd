@@ -23,7 +23,7 @@ export default function Home() {
             </button>
           </div>
         ) : (
-          <p>Welcome back, {user?.firstName}! You are logged in.</p>
+          <p>Welcome back, {user?.first_name}! You are logged in.</p>
         )}
       </div>
     </div>

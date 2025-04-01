@@ -132,8 +132,8 @@ app.get("/me", requireAuth, async (req, res) => {
       id: true,
       email: true,
       username: true,
-      firstName: true,
-      lastName: true,
+      first_name: true,
+      last_name: true,
     },
   });
   res.json(user);
@@ -163,8 +163,8 @@ app.get("/users/:id", async (req, res) => {
       id: true,
       email: true,
       username: true,
-      firstName: true,
-      lastName: true,
+      first_name: true,
+      last_name: true,
     },
   });
   if (!user) {
@@ -175,16 +175,21 @@ app.get("/users/:id", async (req, res) => {
 
 // update user by id endpoint
 app.put("/users/:id", requireAuth, async (req, res) => {
-  const { email, firstName, lastName, username } = req.body;
+  const {
+    email,
+    firstName: first_name,
+    lastName: last_name,
+    username,
+  } = req.body;
   const user = await prisma.users.update({
     where: { id: parseInt(req.params.id) },
-    data: { email, firstName, lastName, username },
+    data: { email, firstName: first_name, lastName: last_name, username },
     select: {
       id: true,
       email: true,
       username: true,
-      firstName: true,
-      lastName: true,
+      first_name: true,
+      last_name: true,
     },
   });
   res.json(user);

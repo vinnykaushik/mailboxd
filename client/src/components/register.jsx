@@ -14,7 +14,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     await register(email, password, firstName, lastName, username);
-    navigate("/app");
+    navigate("/");
   };
 
   return (
