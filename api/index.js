@@ -118,7 +118,7 @@ app.get("/me", requireAuth, async (req, res) => {
 // USER OPERATIONS ---------------------------------------------------
 
 // get all users endpoint
-app.get("/users", requireAuth, async (req, res) => {
+app.get("/users", async (req, res) => {
   const users = await prisma.users.findMany({
     select: { id: true, email: true, username: true, name: true },
   });
@@ -126,7 +126,7 @@ app.get("/users", requireAuth, async (req, res) => {
 });
 
 // get user by id endpoint
-app.get("/users/:id", requireAuth, async (req, res) => {
+app.get("/users/:id", async (req, res) => {
   const user = await prisma.users.findUnique({
     where: { id: parseInt(req.params.id) },
     select: { id: true, email: true, username: true, name: true },
@@ -161,9 +161,19 @@ app.post("/users/:id/watchlist", requireAuth, async (req, res) => {
 });
 
 // get watchlist by user id endpoint
-app.get("/users/:id/watchlist", requireAuth, async (req, res) => {
+app.get("/users/:id/watchlist", async (req, res) => {
   const watchlist = await prisma.watchlist.findMany({
     where: { userId: parseInt(req.params.id) },
+    select: { id: true, movieId: true, userId: true },
+  });
+  res.json(watchlist);
+});
+
+// add movie to watchlist endpoint
+app.post("/add-to-watchlist", requireAuth, async (req, res) => {
+  const { movieId } = req.body;
+  const watchlist = await prisma.watchlist.create({
+    data: { userId: req.userId, movieId },
     select: { id: true, movieId: true, userId: true },
   });
   res.json(watchlist);
