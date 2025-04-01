@@ -58,12 +58,12 @@ export function AuthProvider({ children }) {
     setIsAuthenticated(false);
   };
 
-  const register = async (email, password, name) => {
+  const register = async (email, password, name, username) => {
     const res = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
       method: "POST",
       credentials: "include",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, name }),
+      body: JSON.stringify({ email, password, name, username }),
     });
 
     if (res.ok) {
