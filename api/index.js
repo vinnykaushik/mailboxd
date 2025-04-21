@@ -222,10 +222,10 @@ app.put("/users/:id", requireAuth, async (req, res) => {
 
 // create watchlist endpoint
 app.post("/users/:id/watchlist", requireAuth, async (req, res) => {
-  const { movieId } = req.body;
+  const { movie_ids } = req.body;
   const watchlist = await prisma.watchlist.create({
-    data: { userId: parseInt(req.params.id), movieId },
-    select: { id: true, movie: true, userId: true },
+    data: { user_id: parseInt(req.params.id), movie_ids },
+    select: { watchlist_id: true, movie_ids: true, user_id: true },
   });
   res.json(watchlist);
 });
@@ -233,18 +233,18 @@ app.post("/users/:id/watchlist", requireAuth, async (req, res) => {
 // get watchlist by user id endpoint
 app.get("/users/:id/watchlist", async (req, res) => {
   const watchlist = await prisma.watchlist.findMany({
-    where: { userId: parseInt(req.params.id) },
-    select: { id: true, movieId: true, userId: true },
+    where: { user_id: parseInt(req.params.id) },
+    select: { watchlist_id: true, movie_ids: true, user_id: true },
   });
   res.json(watchlist);
 });
 
 // add movie to watchlist endpoint
-app.post("/add-to-watchlist", requireAuth, async (req, res) => {
+app.put("/add-to-watchlist", requireAuth, async (req, res) => {
   const { movieId } = req.body;
-  const watchlist = await prisma.watchlist.create({
-    data: { userId: req.userId, movieId },
-    select: { id: true, movieId: true, userId: true },
+  const watchlist = await prisma.watchlist.updateMany({
+    where: { userId: req.userId },
+    data: { movie_ids: { push: movieId } },
   });
   res.json(watchlist);
 });
@@ -252,9 +252,24 @@ app.post("/add-to-watchlist", requireAuth, async (req, res) => {
 // remove movie from watchlist endpoint
 app.delete("/remove-from-watchlist", requireAuth, async (req, res) => {
   const { movieId } = req.body;
-  const watchlist = await prisma.watchlist.deleteMany({
-    where: { userId: req.userId, movieId },
+
+  const currentWatchlist = await prisma.watchlist.findFirst({
+    where: { userId: req.userId },
   });
+
+  if (!currentWatchlist) {
+    return res.status(404).json({ error: "Watchlist not found" });
+  }
+
+  const updatedMovieIds = currentWatchlist.movie_ids.filter(
+    (id) => id !== movieId
+  );
+
+  const watchlist = await prisma.watchlist.update({
+    where: { watchlist_id: currentWatchlist.watchlist_id },
+    data: { movie_ids: updatedMovieIds },
+  });
+
   res.json(watchlist);
 });
 
@@ -288,8 +303,8 @@ app.post("/reviews", requireAuth, async (req, res) => {
 app.get("/reviews", async (req, res) => {
   const reviews = await prisma.reviews.findMany({
     select: {
-      id: true,
-      content: true,
+      review_id: true,
+      review_text: true,
       rating: true,
       user_id: true,
       movie_id: true,

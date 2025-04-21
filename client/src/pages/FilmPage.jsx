@@ -11,6 +11,7 @@ import { useAuthUser } from "../security/AuthContext";
 import { fetchGetWithAuth, fetchPostWithAuth } from "../security/fetchWithAuth";
 import ReviewCard from "../components/ReviewCard";
 import "../styles/FilmPage.css";
+import Navbar from "../components/Navbar";
 
 const FilmPage = () => {
   const { id: filmId } = useParams();
@@ -30,6 +31,7 @@ const FilmPage = () => {
   useEffect(() => {
     const fetchFilmData = async () => {
       try {
+        // Public data that doesn't require authentication
         const filmResponse = await fetch(
           `https://api.themoviedb.org/3/movie/${filmId}?api_key=${TMDB_API_KEY}&language=en-US`
         );
@@ -47,14 +49,16 @@ const FilmPage = () => {
           );
           if (reviewsResponse.ok) {
             const reviewsData = await reviewsResponse.json();
-            setReviews(reviewsData);
+            setReviews(reviewsData || []);
           }
         } catch (error) {
           console.error("Error fetching reviews", error);
           setReviews([]);
         }
 
-        if (isAuthenticated && user) {
+        // Only attempt authenticated requests if user is definitely logged in
+        // and user object exists with an id property
+        if (isAuthenticated && user && user.id) {
           try {
             const userReviewResponse = await fetchGetWithAuth(
               `${API_URL}/users/${user.id}/movies/${filmId}/reviews`
@@ -68,15 +72,25 @@ const FilmPage = () => {
               `${API_URL}/users/${user.id}/watchlist`
             );
 
-            if (watchlistResponse && watchlistResponse.length > 0) {
-              const isInWatchlist = watchlistResponse.some(
-                (item) =>
-                  item.movie_ids && item.movie_ids.includes(parseInt(filmId))
-              );
-              setIsWatchlisted(isInWatchlist);
+            if (watchlistResponse) {
+              const watchlistItems = Array.isArray(watchlistResponse)
+                ? watchlistResponse
+                : [watchlistResponse];
+
+              if (watchlistItems.length > 0) {
+                const isInWatchlist = watchlistItems.some((item) => {
+                  if (item.movie_ids && Array.isArray(item.movie_ids)) {
+                    return item.movie_ids.includes(parseInt(filmId));
+                  }
+                  return item.movie_id === parseInt(filmId);
+                });
+
+                setIsWatchlisted(isInWatchlist);
+              }
             }
           } catch (error) {
             console.error("Error fetching user interactions", error);
+            // Don't let authentication errors affect the main film display
           }
         }
       } catch (error) {
@@ -141,16 +155,17 @@ const FilmPage = () => {
   if (!film) {
     return <div className="error-container">Film not found</div>;
   }
-
+  console.log(film);
   return (
     <div className="page-container">
+      <Navbar />
       <div className="backdrop-container">
         <div
           className="backdrop"
           style={{
             backgroundImage: `url(https://image.tmdb.org/t/p/original${film.backdrop_path})`,
           }}
-        ></div>
+        />
       </div>
 
       <div className="film-details">
@@ -172,7 +187,7 @@ const FilmPage = () => {
 
         <div className="film-info">
           <h1 className="title">
-            {film.title}{" "}
+            {film.title}
             <span className="year">({film.release_date?.split("-")[0]})</span>
           </h1>
 
@@ -240,9 +255,9 @@ const FilmPage = () => {
         {reviews.length > 0 ? (
           reviews.map((review) => (
             <ReviewCard
-              key={review.id}
+              key={review.review_id}
               review={review}
-              isOwner={user?.id === review.userId}
+              isOwner={user?.id === review.user_id}
             />
           ))
         ) : (
