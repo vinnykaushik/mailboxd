@@ -1,24 +1,33 @@
-// This function is used to fetch data from the server with the credentials option set to include.
-
-export async function fetchWithAuth(url, options = {}) {
+export const fetchWithAuth = async (url, options = {}) => {
   try {
-    const res = await fetch(url, { ...options, credentials: "include" });
+    const response = await fetch(url, {
+      ...options,
+      credentials: "include",
+      headers: {
+        ...options.headers,
+        "Content-Type": "application/json",
+      },
+    });
 
-    if (res.status === 401) {
-      window.location.href = "/login";
-      return;
+    if (response.status === 404) {
+      console.log(`Resource not found: ${url}`);
+      return null;
     }
 
-    if (!res.ok) {
-      throw new Error(`Request failed with status ${res.status}`);
+    if (!response.ok) {
+      throw new Error(`Request failed with status ${response.status}`);
     }
 
-    return res;
+    if (response.status === 204) {
+      return null;
+    }
+
+    return await response.json();
   } catch (error) {
     console.error("Error during fetchWithAuth:", error);
     throw error;
   }
-}
+};
 
 export async function fetchGetWithAuth(url) {
   try {

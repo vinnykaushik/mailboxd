@@ -1,0 +1,79 @@
+.review-card {
+  background-color: var(--lighter-bg);
+  border-radius: 6px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.review-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--primary-color);
+  color: var(--dark-bg);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-weight: bold;
+  font-size: 1.2rem;
+}
+
+.username {
+  font-weight: 600;
+}
+
+.review-date {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.review-rating {
+  margin-bottom: 1rem;
+}
+
+.star-filled {
+  color: var(--primary-color);
+  margin-right: 2px;
+}
+
+.star-empty {
+  color: #555;
+  margin-right: 2px;
+}
+
+.review-content {
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.review-actions {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.edit-link {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--primary-color);
+  font-size: 0.9rem;
+  transition: opacity 0.2s;
+}
+
+.edit-link:hover {
+  opacity: 0.8;
+}

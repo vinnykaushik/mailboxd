@@ -1,0 +1,131 @@
+.page-container {
+  background-color: var(--dark-bg);
+  min-height: 100vh;
+  color: var(--text-color);
+}
+
+.backdrop-container {
+  position: relative;
+  height: 400px;
+  overflow: hidden;
+}
+
+.backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  filter: blur(2px) brightness(0.3);
+}
+
+.film-details {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  position: relative;
+  z-index: 10;
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  grid-gap: 2rem;
+}
+
+.poster {
+  width: 100%;
+  border-radius: 5px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+}
+
+.film-info {
+  display: flex;
+  flex-direction: column;
+}
+
+.title {
+  font-size: 2.5rem;
+  margin: 0;
+}
+
+.year {
+  color: var(--text-secondary);
+  font-size: 1.2rem;
+}
+
+.tagline {
+  font-style: italic;
+  color: var(--text-secondary);
+  margin: 0.5rem 0 1.5rem;
+}
+
+.overview {
+  line-height: 1.6;
+  margin-bottom: 2rem;
+}
+
+.stats {
+  display: flex;
+  gap: 2rem;
+  margin-bottom: 2rem;
+}
+
+.stat {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.user-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.star-icon {
+  font-size: 1.4rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.star-active {
+  color: var(--primary-color);
+}
+
+.star-inactive {
+  color: var(--lighter-bg);
+}
+
+.star-icon:hover {
+  color: var(--primary-color);
+}
+
+.reviews-section {
+  max-width: 1200px;
+  margin: 2rem auto;
+  padding: 0 2rem 2rem;
+}
+
+.reviews-header {
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--lighter-bg);
+  padding-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .film-details {
+    grid-template-columns: 1fr;
+  }
+
+  .poster {
+    max-width: 300px;
+    margin: 0 auto;
+  }
+}

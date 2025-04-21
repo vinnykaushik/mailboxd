@@ -1,0 +1,135 @@
+.register-page {
+  background-color: #14181c;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.register-container {
+  background-color: #2c3440;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  max-width: 500px;
+  padding: 2rem;
+  margin-top: 3rem;
+}
+
+.register-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.register-title {
+  color: #ffffff;
+  font-size: 1.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.register-subtitle {
+  color: #99a1a7;
+  font-size: 1rem;
+}
+
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-label {
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+.form-input {
+  padding: 0.75rem 1rem;
+  background-color: #202830;
+  color: #ffffff;
+  border: 1px solid #38434e;
+  border-radius: 4px;
+  font-size: 1rem;
+  transition: border-color 0.3s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: #00e054;
+}
+
+.register-button {
+  background-color: #00e054;
+  color: #14181c;
+  border: none;
+  border-radius: 4px;
+  padding: 0.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+  transition: background-color 0.3s;
+}
+
+.register-button:hover {
+  background-color: #00c048;
+}
+
+.login-prompt {
+  text-align: center;
+  margin-top: 2rem;
+  color: #99a1a7;
+}
+
+.login-link {
+  color: #00e054;
+  text-decoration: none;
+}
+
+.login-link:hover {
+  text-decoration: underline;
+}
+
+.cancel-prompt {
+  text-align: center;
+  margin-top: 1rem;
+  color: #99a1a7;
+}
+
+.error-message {
+  background-color: rgba(255, 75, 75, 0.2);
+  border-left: 4px solid #ff4b4b;
+  color: #ffffff;
+  padding: 0.75rem 1rem;
+  border-radius: 4px;
+  margin-bottom: 1.5rem;
+}
+
+.password-requirements {
+  color: #99a1a7;
+  font-size: 0.85rem;
+  margin-top: 0.5rem;
+}
+
+.password-requirements ul {
+  margin-top: 0.5rem;
+  padding-left: 1.5rem;
+}

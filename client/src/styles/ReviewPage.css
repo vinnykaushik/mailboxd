@@ -1,0 +1,93 @@
+.review-page {
+  background-color: var(--dark-bg);
+  min-height: 100vh;
+  color: var(--text-color);
+}
+
+.review-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 0 1rem;
+}
+
+.film-header {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.poster-thumbnail {
+  width: 80px;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.film-title {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.film-year {
+  color: var(--text-secondary);
+}
+
+.review-by {
+  margin: 0.5rem 0 0;
+  color: var(--text-secondary);
+}
+
+.review-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.rating-container,
+.content-container {
+  margin-bottom: 1rem;
+}
+
+.rating-stars {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.star-icon {
+  font-size: 2rem;
+  cursor: pointer;
+  transition: color 0.2s ease;
+}
+
+.star-active {
+  color: var(--primary-color);
+}
+
+.star-inactive {
+  color: var(--lighter-bg);
+}
+
+.content-textarea {
+  width: 100%;
+  min-height: 250px;
+  padding: 1rem;
+  border: 1px solid var(--lighter-bg);
+  border-radius: 4px;
+  background-color: var(--lighter-bg);
+  color: var(--text-color);
+  font-size: 1rem;
+  resize: vertical;
+  font-family: inherit;
+}
+
+.content-textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1rem;
+}

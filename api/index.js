@@ -42,50 +42,73 @@ app.get("/ping", (req, res) => {
 
 // register endpoint
 app.post("/register", async (req, res) => {
-  const { email, password, firstName, lastName, username } = req.body;
-  const existingUserByEmail = await prisma.users.findUnique({
-    where: { email },
-  });
-  const existingUserByUsername = await prisma.users.findUnique({
-    where: { username },
-  });
+  try {
+    const { email, password, firstName, lastName, username } = req.body;
 
-  const existingUser = existingUserByEmail || existingUserByUsername;
-
-  if (existingUserByEmail) {
-    return res.status(400).json({ error: "Email already in use" });
-  }
-
-  if (existingUserByUsername) {
-    return res.status(400).json({ error: "Username already taken" });
-  }
-  if (existingUser) {
-    return res.status(400).json({ error: "User already exists" });
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-  const newUser = await prisma.users.create({
-    data: {
+    console.log("Registration data received:", {
       email,
-      password: hashedPassword,
-      first_name: firstName,
-      last_name: lastName,
+      password,
+      firstName,
+      lastName,
       username,
-    },
-    select: {
-      id: true,
-      email: true,
-      first_name: true,
-      last_name: true,
-      username: true,
-    },
-  });
+      emailType: typeof email,
+    });
 
-  const payload = { userId: newUser.id };
-  const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
-  res.cookie("token", token, { httpOnly: true, maxAge: 15 * 60 * 1000 });
+    if (typeof email !== "string") {
+      return res.status(400).json({
+        message: "Email must be a string",
+      });
+    }
 
-  res.json(newUser);
+    const existingUserByEmail = await prisma.users.findUnique({
+      where: { email },
+    });
+
+    const existingUserByUsername = await prisma.users.findUnique({
+      where: { username },
+    });
+
+    if (existingUserByEmail) {
+      return res.status(400).json({
+        message: "Email already in use",
+      });
+    }
+
+    if (existingUserByUsername) {
+      return res.status(400).json({
+        message: "Username already taken",
+      });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const newUser = await prisma.users.create({
+      data: {
+        email,
+        password: hashedPassword,
+        first_name: firstName,
+        last_name: lastName,
+        username,
+      },
+      select: {
+        id: true,
+        email: true,
+        first_name: true,
+        last_name: true,
+        username: true,
+      },
+    });
+
+    const payload = { userId: newUser.id };
+    const token = jwt.sign(payload, process.env.JWT_SECRET, {
+      expiresIn: "15m",
+    });
+    res.cookie("token", token, { httpOnly: true, maxAge: 15 * 60 * 1000 });
+
+    res.json(newUser);
+  } catch (error) {
+    console.error("Registration error:", error);
+    console.log("Error details:", error.message);
+    res.status(500).json({ message: error.message });
+  }
 });
 
 // login endpoint
@@ -226,6 +249,153 @@ app.post("/add-to-watchlist", requireAuth, async (req, res) => {
   res.json(watchlist);
 });
 
+// remove movie from watchlist endpoint
+app.delete("/remove-from-watchlist", requireAuth, async (req, res) => {
+  const { movieId } = req.body;
+  const watchlist = await prisma.watchlist.deleteMany({
+    where: { userId: req.userId, movieId },
+  });
+  res.json(watchlist);
+});
+
 app.listen(8000, () => {
   console.log("Server running on http://localhost:8000 🎉 🚀");
+});
+
+// REVIEW OPERATIONS ---------------------------------------------------
+// create review endpoint
+app.post("/reviews", requireAuth, async (req, res) => {
+  const { movie_id, review_text, rating } = req.body;
+  const review = await prisma.reviews.create({
+    data: {
+      user_id: req.userId,
+      movie_id,
+      review_text,
+      rating,
+    },
+    select: {
+      review_id: true,
+      review_text: true,
+      rating: true,
+      user_id: true,
+      movie_id: true,
+    },
+  });
+  res.json(review);
+});
+
+// get all reviews endpoint
+app.get("/reviews", async (req, res) => {
+  const reviews = await prisma.reviews.findMany({
+    select: {
+      id: true,
+      content: true,
+      rating: true,
+      user_id: true,
+      movie_id: true,
+    },
+  });
+  res.json(reviews);
+});
+
+// delete review by userid and movieid endpoint
+app.delete(
+  "/users/:userId/movies/:movieId/delete-review",
+  requireAuth,
+  async (req, res) => {
+    const { userId, movieId } = req.params;
+    const review = await prisma.reviews.delete({
+      where: {
+        user_id: parseInt(userId),
+        movie_id: parseInt(movieId),
+      },
+      select: {
+        review_id: true,
+        review_text: true,
+        rating: true,
+        user_id: true,
+        movie_id: true,
+      },
+    });
+    res.json(review);
+  }
+);
+
+// update review by userid and movieid endpoint
+app.put(
+  "/users/:userId/movies/:movieId/update-review",
+  requireAuth,
+  async (req, res) => {
+    const { userId, movieId } = req.params;
+    const { review_text, rating } = req.body;
+    const review = await prisma.reviews.update({
+      where: {
+        user_id: parseInt(userId),
+        movie_id: parseInt(movieId),
+      },
+      data: { review_text, rating },
+      select: {
+        review_id: true,
+        review_text: true,
+        rating: true,
+        user_id: true,
+        movie_id: true,
+      },
+    });
+    res.json(review);
+  }
+);
+
+// get reviews by user id endpoint
+app.get("/users/:id/reviews", async (req, res) => {
+  const reviews = await prisma.reviews.findMany({
+    where: { user_id: parseInt(req.params.id) },
+    select: {
+      id: true,
+      content: true,
+      rating: true,
+      user_id: true,
+      movie_id: true,
+    },
+  });
+  res.json(reviews);
+});
+
+// get reviews by movie id endpoint
+app.get("/movies/:id/reviews", async (req, res) => {
+  const reviews = await prisma.reviews.findMany({
+    where: { movie_id: parseInt(req.params.id) },
+    select: {
+      review_id: true,
+      review_text: true,
+      rating: true,
+      user_id: true,
+      movie_id: true,
+      User: {
+        select: {
+          username: true,
+        },
+      },
+    },
+  });
+  res.json(reviews);
+});
+
+// get reviews by user id and movie id endpoint
+app.get("/users/:userId/movies/:movieId/reviews", async (req, res) => {
+  const { userId, movieId } = req.params;
+  const reviews = await prisma.reviews.findMany({
+    where: {
+      user_id: parseInt(userId),
+      movie_id: parseInt(movieId),
+    },
+    select: {
+      review_id: true,
+      review_text: true,
+      rating: true,
+      user_id: true,
+      movie_id: true,
+    },
+  });
+  res.json(reviews);
 });

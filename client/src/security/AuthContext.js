@@ -7,13 +7,17 @@ export function AuthProvider({ children }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
 
+  const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const res = await fetch(`${process.env.REACT_APP_API_URL}/me`, {
+        const res = await fetch(`${API_URL}/me`, {
           credentials: "include",
+          headers: {
+            Accept: "application/json",
+          },
         });
-        console.log("Fetching user data from /me endpoint:", res);
 
         if (res.ok) {
           setIsAuthenticated(true);
@@ -25,55 +29,75 @@ export function AuthProvider({ children }) {
         }
       } catch (error) {
         console.error("Error fetching user data:", error);
+        setIsAuthenticated(false);
+        setUser(null);
       } finally {
         setLoading(false);
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [API_URL]);
 
   const login = async (email, password) => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/login`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch(`${API_URL}/login`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
 
-    if (res.ok) {
-      const userData = await res.json();
-      setIsAuthenticated(true);
-      setUser(userData);
-    } else {
+      if (res.ok) {
+        const userData = await res.json();
+        setIsAuthenticated(true);
+        setUser(userData);
+        return userData;
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Login failed");
+      }
+    } catch (error) {
+      setIsAuthenticated(false);
+      setUser(null);
+      throw error;
+    }
+  };
+
+  const logout = async () => {
+    try {
+      await fetch(`${API_URL}/logout`, {
+        method: "POST",
+        credentials: "include",
+      });
+    } finally {
       setIsAuthenticated(false);
       setUser(null);
     }
   };
 
-  const logout = async () => {
-    await fetch(`${process.env.REACT_APP_API_URL}/logout`, {
-      method: "POST",
-      credentials: "include",
-    });
-    setIsAuthenticated(false);
-  };
+  const register = async (userData) => {
+    try {
+      const res = await fetch(`${API_URL}/register`, {
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
 
-  const register = async (email, password, firstName, lastName, username) => {
-    const res = await fetch(`${process.env.REACT_APP_API_URL}/register`, {
-      method: "POST",
-      credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password, firstName, lastName, username }),
-    });
-
-    if (res.ok) {
-      const userData = await res.json();
-      setIsAuthenticated(true);
-      setUser(userData);
-    } else {
+      if (res.ok) {
+        const data = await res.json();
+        setIsAuthenticated(true);
+        setUser(data.user || data);
+        return data;
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || "Registration failed");
+      }
+    } catch (error) {
       setIsAuthenticated(false);
       setUser(null);
+      throw error;
     }
   };
 

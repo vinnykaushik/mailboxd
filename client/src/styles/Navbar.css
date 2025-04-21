@@ -1,0 +1,82 @@
+.nav-container {
+  background: var(--darker-bg);
+  padding: 0.8rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--primary-color);
+  text-decoration: none;
+  font-family: "Lato", sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.nav-link {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover {
+  color: var(--text-color);
+}
+
+.search-bar {
+  position: relative;
+  margin-left: auto;
+  margin-right: 1.5rem;
+}
+
+.search-input {
+  background: var(--lighter-bg);
+  border: none;
+  border-radius: 3px;
+  padding: 0.5rem 1rem 0.5rem 2.5rem;
+  color: var(--text-color);
+  width: 200px;
+  transition: width 0.3s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  background: #38434e;
+  width: 250px;
+}
+
+.search-icon {
+  position: absolute;
+  top: 50%;
+  left: 0.7rem;
+  transform: translateY(-50%);
+  color: var(--text-secondary);
+}
+
+.user-menu {
+  position: relative;
+  cursor: pointer;
+}
+
+.avatar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-color);
+}

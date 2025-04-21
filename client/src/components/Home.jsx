@@ -1,30 +1,47 @@
-import { useAuthUser } from "../security/AuthContext";
+import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useAuthUser } from "../security/AuthContext";
+import Navbar from "./Navbar";
+import FilmCarousel from "./FilmCarousel";
+import "../styles/Home.css";
 
 export default function Home() {
   const { isAuthenticated, user } = useAuthUser();
   const navigate = useNavigate();
 
   return (
-    <div>
-      <h1>Mailboxd</h1>
-      <div>
-        {!isAuthenticated ? (
-          <div>
-            <p>Welcome to Mailboxd! Log in or register to track your films!</p>
-            <button className="btn-primary" onClick={() => navigate("/login")}>
-              Login
-            </button>
+    <div className="home-container">
+      <Navbar />
+
+      <div className="hero">
+        <h1 className="hero-title">Track films you've watched.</h1>
+        <p className="hero-subtitle">
+          Save those you want to see. Tell your friends what's good.
+        </p>
+
+        {!isAuthenticated && (
+          <div className="hero-cta">
             <button
-              className="btn-secondary"
+              className="btn btn-primary"
               onClick={() => navigate("/register")}
             >
-              Create Account
+              Get Started – It's Free!
             </button>
+            <p className="sign-in-prompt">
+              Already have an account?{" "}
+              <button onClick={() => navigate("/login")} className="text-link">
+                Sign in
+              </button>
+            </p>
           </div>
-        ) : (
-          <p>Welcome back, {user?.first_name}! You are logged in.</p>
         )}
+      </div>
+
+      <div className="carousels-section">
+        <FilmCarousel title="Popular Films" endpoint="popular" />
+        <FilmCarousel title="Now Playing" endpoint="now_playing" />
+        <FilmCarousel title="Top Rated" endpoint="top_rated" />
+        <FilmCarousel title="Upcoming" endpoint="upcoming" />
       </div>
     </div>
   );

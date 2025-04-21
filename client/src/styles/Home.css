@@ -1,0 +1,49 @@
+.home-container {
+  background-color: var(--dark-bg);
+  color: var(--text-color);
+  min-height: 100vh;
+}
+
+.hero {
+  background: linear-gradient(to bottom, #14181c, #1c2229);
+  padding: 4rem 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.hero-title {
+  font-size: 2.5rem;
+  margin-bottom: 1rem;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  max-width: 700px;
+  margin: 0 auto;
+  color: var(--text-secondary);
+}
+
+.hero-cta {
+  margin-top: 2rem;
+}
+
+.sign-in-prompt {
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.text-link {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  font-size: inherit;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.carousels-section {
+  max-width: 1400px;
+  margin: 0 auto;
+}

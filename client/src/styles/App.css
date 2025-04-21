@@ -1,0 +1,73 @@
+:root {
+  --primary-color: #00e054;
+  --dark-bg: #14181c;
+  --darker-bg: #0a0e12;
+  --lighter-bg: #2c3440;
+  --text-color: #ffffff;
+  --text-secondary: #99a1a7;
+  --accent: #ff8000;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: "Lato", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  background-color: var(--dark-bg);
+  color: var(--text-color);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 1rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: 3px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: var(--dark-bg);
+}
+
+.btn-primary:hover {
+  background-color: #00c048;
+}
+
+.btn-secondary {
+  background-color: var(--lighter-bg);
+  color: var(--text-color);
+}
+
+.btn-secondary:hover {
+  background-color: #38434e;
+}
+
+.btn-danger {
+  background-color: #ff6b6b;
+  color: var(--text-color);
+}
+
+.btn-danger:hover {
+  background-color: #ff5252;
+}
