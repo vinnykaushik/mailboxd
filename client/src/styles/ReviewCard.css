@@ -77,3 +77,49 @@
 .edit-link:hover {
   opacity: 0.8;
 }
+
+.edit-review-textarea {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: inherit;
+  resize: vertical;
+  margin-bottom: 10px;
+}
+
+.edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.cancel-edit-btn {
+  padding: 6px 12px;
+  background-color: #f0f0f0;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-edit-btn {
+  padding: 6px 12px;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.save-edit-btn:disabled,
+.cancel-edit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.star-icon {
+  font-size: 1.5rem;
+  margin-right: 4px;
+}

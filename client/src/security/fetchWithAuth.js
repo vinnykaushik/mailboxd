@@ -84,3 +84,46 @@ export const fetchWithAuth = async (url, options = {}) => {
     return null;
   }
 };
+
+export const fetchDeleteWithAuth = async (url) => {
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error in fetchDeleteWithAuth:", error);
+    throw error;
+  }
+};
+
+export const fetchPutWithAuth = async (url, data) => {
+  try {
+    const response = await fetch(url, {
+      method: "PUT",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error("Error in fetchPutWithAuth:", error);
+    throw error;
+  }
+};

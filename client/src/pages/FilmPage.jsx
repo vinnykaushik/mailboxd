@@ -8,7 +8,11 @@ import {
   FaPencilAlt,
 } from "react-icons/fa";
 import { useAuthUser } from "../security/AuthContext";
-import { fetchGetWithAuth, fetchPostWithAuth } from "../security/fetchWithAuth";
+import {
+  fetchGetWithAuth,
+  fetchPostWithAuth,
+  fetchPutWithAuth,
+} from "../security/fetchWithAuth";
 import ReviewCard from "../components/ReviewCard";
 import "../styles/FilmPage.css";
 import Navbar from "../components/Navbar";
@@ -73,19 +77,21 @@ const FilmPage = () => {
             );
 
             if (watchlistResponse) {
-              const watchlistItems = Array.isArray(watchlistResponse)
-                ? watchlistResponse
-                : [watchlistResponse];
+              if (!Array.isArray(watchlistResponse)) {
+                watchlistResponse = [watchlistResponse];
+              }
 
-              if (watchlistItems.length > 0) {
-                const isInWatchlist = watchlistItems.some((item) => {
-                  if (item.movie_ids && Array.isArray(item.movie_ids)) {
+              if (watchlistResponse.length > 0) {
+                const isInWatchlist = watchlistResponse.some((item) => {
+                  if (item && item.movie_ids && Array.isArray(item.movie_ids)) {
                     return item.movie_ids.includes(parseInt(filmId));
                   }
-                  return item.movie_id === parseInt(filmId);
+                  return false;
                 });
 
                 setIsWatchlisted(isInWatchlist);
+              } else {
+                setIsWatchlisted(false);
               }
             }
           } catch (error) {
@@ -133,12 +139,12 @@ const FilmPage = () => {
 
     try {
       if (isWatchlisted) {
-        await fetchPostWithAuth(`${API_URL}/remove-from-watchlist`, {
+        await fetchPutWithAuth(`${API_URL}/remove-from-watchlist`, {
           movieId: parseInt(filmId),
         });
         setIsWatchlisted(false);
       } else {
-        await fetchPostWithAuth(`${API_URL}/add-to-watchlist`, {
+        await fetchPutWithAuth(`${API_URL}/add-to-watchlist`, {
           movieId: parseInt(filmId),
         });
         setIsWatchlisted(true);
@@ -155,7 +161,7 @@ const FilmPage = () => {
   if (!film) {
     return <div className="error-container">Film not found</div>;
   }
-  console.log(film);
+
   return (
     <div className="page-container">
       <Navbar />
@@ -187,7 +193,7 @@ const FilmPage = () => {
 
         <div className="film-info">
           <h1 className="title">
-            {film.title}
+            {film.title}{" "}
             <span className="year">({film.release_date?.split("-")[0]})</span>
           </h1>
 
@@ -258,6 +264,18 @@ const FilmPage = () => {
               key={review.review_id}
               review={review}
               isOwner={user?.id === review.user_id}
+              onReviewDeleted={(deletedReviewId) => {
+                setReviews(
+                  reviews.filter((r) => r.review_id !== deletedReviewId)
+                );
+              }}
+              onReviewUpdated={(updatedReview) => {
+                setReviews(
+                  reviews.map((r) =>
+                    r.review_id === updatedReview.review_id ? updatedReview : r
+                  )
+                );
+              }}
             />
           ))
         ) : (

@@ -97,6 +97,13 @@ app.post("/register", async (req, res) => {
       },
     });
 
+    await prisma.watchlist.create({
+      data: {
+        user_id: newUser.id,
+        movie_ids: [],
+      },
+    });
+
     const payload = { userId: newUser.id };
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: "15m",
@@ -129,12 +136,11 @@ app.post("/login", async (req, res) => {
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
   res.cookie("token", token, { httpOnly: true, maxAge: 15 * 60 * 1000 });
 
-  // ensure that the password is not sent to the client
   const userData = {
     id: user.id,
     email: user.email,
-    firstName: user.firstName,
-    lastName: user.lastName,
+    firstName: user.first_name,
+    lastName: user.last_name,
     username: user.username,
   };
 
@@ -196,7 +202,7 @@ app.get("/users/:id", async (req, res) => {
   res.json(user);
 });
 
-// update user by id endpoint
+// Update user by id endpoint
 app.put("/users/:id", requireAuth, async (req, res) => {
   const {
     email,
@@ -206,7 +212,7 @@ app.put("/users/:id", requireAuth, async (req, res) => {
   } = req.body;
   const user = await prisma.users.update({
     where: { id: parseInt(req.params.id) },
-    data: { email, firstName: first_name, lastName: last_name, username },
+    data: { email, firstName: first_name, lastName: last_name, username }, // ← Issue here
     select: {
       id: true,
       email: true,
@@ -242,39 +248,70 @@ app.get("/users/:id/watchlist", async (req, res) => {
 // add movie to watchlist endpoint
 app.put("/add-to-watchlist", requireAuth, async (req, res) => {
   const { movieId } = req.body;
-  const watchlist = await prisma.watchlist.updateMany({
-    where: { userId: req.userId },
-    data: { movie_ids: { push: movieId } },
-  });
-  res.json(watchlist);
+
+  try {
+    let watchlist = await prisma.watchlist.findUnique({
+      where: { user_id: req.userId },
+    });
+
+    if (watchlist) {
+      watchlist = await prisma.watchlist.update({
+        where: { watchlist_id: watchlist.watchlist_id },
+        data: {
+          movie_ids: {
+            push: movieId,
+          },
+        },
+      });
+    } else {
+      watchlist = await prisma.watchlist.create({
+        data: {
+          user_id: req.userId,
+          movie_ids: [movieId],
+        },
+      });
+    }
+
+    res.json(watchlist);
+  } catch (error) {
+    console.error("Error adding to watchlist:", error);
+    res.status(500).json({ error: "Failed to update watchlist" });
+  }
 });
 
 // remove movie from watchlist endpoint
 app.delete("/remove-from-watchlist", requireAuth, async (req, res) => {
   const { movieId } = req.body;
 
-  const currentWatchlist = await prisma.watchlist.findFirst({
-    where: { userId: req.userId },
-  });
+  try {
+    const currentWatchlist = await prisma.watchlist.findUnique({
+      where: { user_id: req.userId },
+    });
 
-  if (!currentWatchlist) {
-    return res.status(404).json({ error: "Watchlist not found" });
+    if (!currentWatchlist) {
+      const newWatchlist = await prisma.watchlist.create({
+        data: {
+          user_id: req.userId,
+          movie_ids: [],
+        },
+      });
+      return res.json(newWatchlist);
+    }
+
+    const updatedMovieIds = currentWatchlist.movie_ids.filter(
+      (id) => id !== movieId
+    );
+
+    const watchlist = await prisma.watchlist.update({
+      where: { watchlist_id: currentWatchlist.watchlist_id },
+      data: { movie_ids: updatedMovieIds },
+    });
+
+    res.json(watchlist);
+  } catch (error) {
+    console.error("Error removing from watchlist:", error);
+    res.status(500).json({ error: "Failed to update watchlist" });
   }
-
-  const updatedMovieIds = currentWatchlist.movie_ids.filter(
-    (id) => id !== movieId
-  );
-
-  const watchlist = await prisma.watchlist.update({
-    where: { watchlist_id: currentWatchlist.watchlist_id },
-    data: { movie_ids: updatedMovieIds },
-  });
-
-  res.json(watchlist);
-});
-
-app.listen(8000, () => {
-  console.log("Server running on http://localhost:8000 🎉 🚀");
 });
 
 // REVIEW OPERATIONS ---------------------------------------------------
@@ -313,16 +350,33 @@ app.get("/reviews", async (req, res) => {
   res.json(reviews);
 });
 
-// delete review by userid and movieid endpoint
-app.delete(
-  "/users/:userId/movies/:movieId/delete-review",
-  requireAuth,
-  async (req, res) => {
-    const { userId, movieId } = req.params;
-    const review = await prisma.reviews.delete({
+// delete review by id
+app.delete("/reviews/:reviewId/delete", requireAuth, async (req, res) => {
+  const { reviewId } = req.params;
+
+  try {
+    // Find review to verify ownership
+    const existingReview = await prisma.reviews.findUnique({
       where: {
-        user_id: parseInt(userId),
-        movie_id: parseInt(movieId),
+        review_id: parseInt(reviewId),
+      },
+    });
+
+    if (!existingReview) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    // Verify the authenticated user owns this review
+    if (existingReview.user_id !== req.userId) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized to delete this review" });
+    }
+
+    // Delete the review using just the review_id
+    const deletedReview = await prisma.reviews.delete({
+      where: {
+        review_id: parseInt(reviewId),
       },
       select: {
         review_id: true,
@@ -332,34 +386,67 @@ app.delete(
         movie_id: true,
       },
     });
-    res.json(review);
+
+    res.json(deletedReview);
+  } catch (error) {
+    console.error("Error deleting review:", error);
+    res.status(500).json({ error: "Failed to delete review" });
   }
-);
+});
 
 // update review by userid and movieid endpoint
-app.put(
-  "/users/:userId/movies/:movieId/update-review",
-  requireAuth,
-  async (req, res) => {
-    const { userId, movieId } = req.params;
-    const { review_text, rating } = req.body;
-    const review = await prisma.reviews.update({
+app.put("/reviews/:reviewId/update", requireAuth, async (req, res) => {
+  const { reviewId } = req.params;
+  const { review_text, rating } = req.body;
+
+  try {
+    const existingReview = await prisma.reviews.findUnique({
       where: {
-        user_id: parseInt(userId),
-        movie_id: parseInt(movieId),
+        review_id: parseInt(reviewId),
       },
-      data: { review_text, rating },
+    });
+
+    if (!existingReview) {
+      return res.status(404).json({ error: "Review not found" });
+    }
+
+    if (existingReview.user_id !== req.userId) {
+      return res
+        .status(403)
+        .json({ error: "Unauthorized to update this review" });
+    }
+
+    const updatedReview = await prisma.reviews.update({
+      where: {
+        review_id: parseInt(reviewId),
+      },
+      data: {
+        review_text,
+        rating,
+        updated_at: new Date(),
+      },
       select: {
         review_id: true,
         review_text: true,
         rating: true,
         user_id: true,
         movie_id: true,
+        created_at: true,
+        updated_at: true,
+        User: {
+          select: {
+            username: true,
+          },
+        },
       },
     });
-    res.json(review);
+
+    res.json(updatedReview);
+  } catch (error) {
+    console.error("Error updating review:", error);
+    res.status(500).json({ error: "Failed to update review" });
   }
-);
+});
 
 // get reviews by user id endpoint
 app.get("/users/:id/reviews", async (req, res) => {
@@ -413,4 +500,8 @@ app.get("/users/:userId/movies/:movieId/reviews", async (req, res) => {
     },
   });
   res.json(reviews);
+});
+
+app.listen(8000, () => {
+  console.log("Server running on http://localhost:8000 🎉 🚀");
 });

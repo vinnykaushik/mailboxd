@@ -27,9 +27,9 @@
   padding: 2rem;
   position: relative;
   z-index: 10;
-  display: grid;
-  grid-template-columns: 300px 1fr;
-  grid-gap: 2rem;
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
 }
 
 .poster {
@@ -39,8 +39,7 @@
 }
 
 .film-info {
-  display: flex;
-  flex-direction: column;
+  position: relative;
 }
 
 .title {

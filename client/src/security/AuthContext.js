@@ -14,11 +14,10 @@ export function AuthProvider({ children }) {
       const token = localStorage.getItem("token");
 
       if (!token) {
-        // No token found, user is not authenticated
         setIsAuthenticated(false);
         setUser(null);
         setLoading(false);
-        return; // Exit early - don't make the API call
+        return;
       }
 
       try {
@@ -26,7 +25,7 @@ export function AuthProvider({ children }) {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          credentials: "include", // Include credentials if your API uses both
+          credentials: "include",
         });
 
         if (response.ok) {

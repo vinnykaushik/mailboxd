@@ -105,9 +105,9 @@ const FilmCarousel = ({ title, endpoint }) => {
                     e.target.src = "/placeholder-poster.jpg";
                   }}
                 />
-                <div className="film-info">
-                  <h3 className="film-title">{film.title}</h3>
-                  <span className="film-year">
+                <div className="carousel-film-info">
+                  <h3 className="carousel-film-title">{film.title}</h3>
+                  <span className="carousel-film-year">
                     {film.release_date?.split("-")[0] || "Unknown"}
                   </span>
                 </div>

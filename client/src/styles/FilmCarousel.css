@@ -39,7 +39,7 @@
   display: block;
 }
 
-.film-info {
+.carousel-film-info {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -50,7 +50,7 @@
   transition: opacity 0.3s;
 }
 
-.film-title {
+.carousel-film-title {
   margin: 0;
   color: var(--text-color);
   font-size: 0.9rem;
@@ -59,7 +59,7 @@
   text-overflow: ellipsis;
 }
 
-.film-year {
+.carousel-film-year {
   color: var(--text-secondary);
   font-size: 0.8rem;
 }
