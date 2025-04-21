@@ -10,25 +10,37 @@ export function AuthProvider({ children }) {
   const API_URL = process.env.REACT_APP_API_URL || "http://localhost:8000";
 
   useEffect(() => {
-    const fetchUserData = async () => {
+    const checkAuthentication = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        // No token found, user is not authenticated
+        setIsAuthenticated(false);
+        setUser(null);
+        setLoading(false);
+        return; // Exit early - don't make the API call
+      }
+
       try {
-        const res = await fetch(`${API_URL}/me`, {
-          credentials: "include",
+        const response = await fetch(`${API_URL}/me`, {
           headers: {
-            Accept: "application/json",
+            Authorization: `Bearer ${token}`,
           },
+          credentials: "include", // Include credentials if your API uses both
         });
 
-        if (res.ok) {
+        if (response.ok) {
+          const userData = await response.json();
+          setUser(userData);
           setIsAuthenticated(true);
-          const data = await res.json();
-          setUser(data);
         } else {
+          // Invalid token or other issue
+          localStorage.removeItem("token");
           setIsAuthenticated(false);
           setUser(null);
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        console.error("Authentication check failed:", error);
         setIsAuthenticated(false);
         setUser(null);
       } finally {
@@ -36,7 +48,7 @@ export function AuthProvider({ children }) {
       }
     };
 
-    fetchUserData();
+    checkAuthentication();
   }, [API_URL]);
 
   const login = async (email, password) => {
