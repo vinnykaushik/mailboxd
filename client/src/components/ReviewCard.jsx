@@ -74,7 +74,9 @@ const ReviewCard = ({ review, isOwner, onReviewDeleted, onReviewUpdated }) => {
   return (
     <div className="review-card">
       <div className="review-header">
-        <h3>{review.User?.username || "Anonymous"}</h3>
+        <h3 href={`/users/${review.User?.id}`}>
+          {review.User?.username || "Anonymous"}
+        </h3>
 
         {isEditing ? (
           <div className="edit-rating">
