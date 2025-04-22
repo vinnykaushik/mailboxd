@@ -61,6 +61,7 @@ export function AuthProvider({ children }) {
 
       if (res.ok) {
         const userData = await res.json();
+        localStorage.setItem("token", userData.token);
         setIsAuthenticated(true);
         setUser(userData);
         return userData;
@@ -98,6 +99,7 @@ export function AuthProvider({ children }) {
 
       if (res.ok) {
         const data = await res.json();
+        localStorage.setItem("token", userData.token);
         setIsAuthenticated(true);
         setUser(data.user || data);
         return data;

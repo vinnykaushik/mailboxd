@@ -26,7 +26,9 @@ const prisma = new PrismaClient();
 
 // Middleware to verify JWT token sent by the client
 function requireAuth(req, res, next) {
-  const token = req.cookies.token;
+  const cookieToken = req.cookies.token;
+  const headerToken = req.headers.authorization?.split(" ")[1];
+  const token = cookieToken || headerToken;
   if (!token) {
     return res.status(401).json({ error: "Unauthorized" });
   }
@@ -114,7 +116,12 @@ app.post("/register", async (req, res) => {
     const token = jwt.sign(payload, process.env.JWT_SECRET, {
       expiresIn: "15m",
     });
-    res.cookie("token", token, { httpOnly: true, maxAge: 15 * 60 * 1000 });
+    res.cookie("token", token, {
+      httpOnly: true,
+      maxAge: 15 * 60 * 1000,
+      sameSite: "none",
+      secure: true,
+    });
 
     res.json(newUser);
   } catch (error) {
