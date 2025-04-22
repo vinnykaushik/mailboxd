@@ -16,7 +16,7 @@
   transition: transform 0.2s;
 }
 
-.poster-container {
+.carousel-poster-container {
   position: relative;
   overflow: hidden;
   border-radius: 5px;
@@ -24,16 +24,16 @@
   transition: transform 0.2s;
 }
 
-.poster-container:hover {
+.carousel-poster-container:hover {
   transform: scale(1.05);
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-.poster-container:hover .film-info {
+.carousel-poster-container:hover .film-info {
   opacity: 1;
 }
 
-.poster {
+.carousel-poster {
   width: 100%;
   height: auto;
   display: block;

@@ -7,6 +7,7 @@ import FilmPage from "./pages/FilmPage";
 import ReviewPage from "./pages/ReviewPage";
 import SearchPage from "./pages/SearchPage";
 import RequireAuth from "./security/RequireAuth";
+import UserProfilePage from "./pages/UserProfilePage";
 import { AuthProvider } from "./security/AuthContext";
 import * as ReactDomClient from "react-dom/client";
 import "./styles/App.css";
@@ -39,6 +40,7 @@ root.render(
             </RequireAuth>
           }
         />
+        <Route path="/users/:userId" element={<UserProfilePage />} />
       </Routes>
     </BrowserRouter>
   </AuthProvider>

@@ -19,6 +19,12 @@
   letter-spacing: 0.5px;
 }
 
+.nav-content {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
 .nav-links {
   display: flex;
   align-items: center;
@@ -72,6 +78,10 @@
 .user-menu {
   position: relative;
   cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-direction: row;
+  gap: 1rem;
 }
 
 .avatar {
@@ -79,4 +89,88 @@
   align-items: center;
   gap: 0.5rem;
   color: var(--text-color);
+}
+
+.avatar a {
+  color: var(--text-color);
+  text-decoration: none;
+}
+
+.hamburger-menu {
+  display: none;
+  cursor: pointer;
+  color: var(--text-color);
+}
+
+body {
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .hamburger-menu {
+    display: block;
+    z-index: 1001;
+  }
+
+  .nav-content {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 250px;
+    height: 100vh;
+    background: var(--darker-bg);
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 70px 20px 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
+    transform: translateX(100%);
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+
+  .nav-content.active {
+    transform: translateX(0);
+  }
+
+  .search-bar {
+    width: 100%;
+    margin: 1rem 0;
+  }
+
+  .search-input {
+    width: calc(100% - 3.5rem);
+  }
+
+  .search-input:focus {
+    width: calc(100% - 3.5rem);
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .user-menu {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+  }
+
+  .btn {
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nav-container {
+    padding: 0.8rem 1rem;
+  }
+
+  .logo {
+    font-size: 1.5rem;
+  }
 }

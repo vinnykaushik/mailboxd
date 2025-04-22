@@ -8,6 +8,8 @@
   position: relative;
   height: 400px;
   overflow: hidden;
+  margin-top: -1px;
+  margin-bottom: -80px; /* Increased negative margin for content overlap */
 }
 
 .backdrop {
@@ -19,6 +21,25 @@
   background-size: cover;
   background-position: center;
   filter: blur(2px) brightness(0.3);
+  /* Modified mask to only fade at the bottom */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 75%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 1) 0%,
+    rgba(0, 0, 0, 1) 75%,
+    transparent 100%
+  );
+}
+
+/* Make sure the navbar and film-details have the proper z-index */
+.nav-container {
+  position: relative;
+  z-index: 20;
 }
 
 .film-details {
@@ -33,9 +54,11 @@
 }
 
 .poster {
-  width: 100%;
-  border-radius: 5px;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+  width: 300px;
+  height: 450px;
+  border-radius: 2%;
+  position: relative;
+  z-index: 15;
 }
 
 .film-info {
@@ -120,11 +143,11 @@
 
 @media (max-width: 768px) {
   .film-details {
-    grid-template-columns: 1fr;
+    flex-direction: column;
   }
 
   .poster {
     max-width: 300px;
-    margin: 0 auto;
+    margin: -60px auto 0;
   }
 }

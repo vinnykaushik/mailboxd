@@ -9,6 +9,7 @@ import {
 } from "react-icons/fa";
 import { useAuthUser } from "../security/AuthContext";
 import {
+  fetchDeleteWithAuth,
   fetchGetWithAuth,
   fetchPostWithAuth,
   fetchPutWithAuth,
@@ -139,7 +140,7 @@ const FilmPage = () => {
 
     try {
       if (isWatchlisted) {
-        await fetchPutWithAuth(`${API_URL}/remove-from-watchlist`, {
+        await fetchDeleteWithAuth(`${API_URL}/remove-from-watchlist`, {
           movieId: parseInt(filmId),
         });
         setIsWatchlisted(false);

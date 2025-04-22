@@ -5,14 +5,21 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import "../styles/FilmCarousel.css";
 
-const FilmCarousel = ({ title, endpoint }) => {
+const FilmCarousel = ({ title, endpoint, customFilms, customSettings }) => {
   const [films, setFilms] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!customFilms);
 
   const TMDB_API_KEY = process.env.REACT_APP_TMDB_API_KEY;
   const TMDB_BASE_URL = "https://api.themoviedb.org/3";
 
   useEffect(() => {
+    // If we have custom films, use those instead of fetching
+    if (customFilms) {
+      setFilms(customFilms);
+      setLoading(false);
+      return;
+    }
+
     const fetchFilms = async () => {
       try {
         let url;
@@ -47,9 +54,9 @@ const FilmCarousel = ({ title, endpoint }) => {
     };
 
     fetchFilms();
-  }, [endpoint, TMDB_API_KEY]);
+  }, [endpoint, customFilms, TMDB_API_KEY]);
 
-  const settings = {
+  const defaultSettings = {
     dots: false,
     infinite: true,
     speed: 500,
@@ -80,20 +87,22 @@ const FilmCarousel = ({ title, endpoint }) => {
     ],
   };
 
+  const settings = customSettings || defaultSettings;
+
   if (loading) {
     return <div className="loading">Loading...</div>;
   }
 
   return (
     <div className="carousel-container">
-      <h2 className="carousel-title">{title}</h2>
+      {title && <h2 className="carousel-title">{title}</h2>}
       <Slider {...settings}>
         {films.map((film) => (
           <div key={film.id} className="film-card">
             <Link to={`/films/${film.id}`}>
-              <div className="poster-container">
+              <div className="carousel-poster-container">
                 <img
-                  className="poster"
+                  className="carousel-poster"
                   src={
                     film.poster_path
                       ? `https://image.tmdb.org/t/p/w500${film.poster_path}`
