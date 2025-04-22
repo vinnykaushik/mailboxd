@@ -506,6 +506,8 @@ app.get("/users/:userId/movies/:movieId/reviews", async (req, res) => {
   res.json(reviews);
 });
 
-app.listen(8000, () => {
-  console.log("Server running on http://localhost:8000 🎉 🚀");
+const PORT = process.env.PORT || 8080;
+
+app.listen(PORT, () => {
+  console.log(`Server running on PORT ${PORT} 🎉 🚀`);
 });
