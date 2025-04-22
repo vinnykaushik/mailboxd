@@ -7,3 +7,7 @@ Unauthenticated users can search for movies and see reviews others have left on 
 # Tech Stack
 
 This project was built in React with base CSS.
+
+# Deployment
+
+Mailboxd is available right now at https://mailboxd.vercel.app/ !
