@@ -147,7 +147,12 @@ app.post("/login", async (req, res) => {
 
   const payload = { userId: user.id };
   const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "15m" });
-  res.cookie("token", token, { httpOnly: true, maxAge: 15 * 60 * 1000 });
+  res.cookie("token", token, {
+    httpOnly: true,
+    maxAge: 15 * 60 * 1000,
+    sameSite: "none",
+    secure: true,
+  });
 
   const userData = {
     id: user.id,

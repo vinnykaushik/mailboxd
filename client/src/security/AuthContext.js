@@ -11,20 +11,8 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const checkAuthentication = async () => {
-      const token = localStorage.getItem("token");
-
-      if (!token) {
-        setIsAuthenticated(false);
-        setUser(null);
-        setLoading(false);
-        return;
-      }
-
       try {
         const response = await fetch(`${API_URL}/me`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
           credentials: "include",
         });
 
@@ -33,8 +21,6 @@ export function AuthProvider({ children }) {
           setUser(userData);
           setIsAuthenticated(true);
         } else {
-          // Invalid token or other issue
-          localStorage.removeItem("token");
           setIsAuthenticated(false);
           setUser(null);
         }
@@ -61,7 +47,6 @@ export function AuthProvider({ children }) {
 
       if (res.ok) {
         const userData = await res.json();
-        localStorage.setItem("token", userData.token);
         setIsAuthenticated(true);
         setUser(userData);
         return userData;
@@ -99,7 +84,6 @@ export function AuthProvider({ children }) {
 
       if (res.ok) {
         const data = await res.json();
-        localStorage.setItem("token", userData.token);
         setIsAuthenticated(true);
         setUser(data.user || data);
         return data;

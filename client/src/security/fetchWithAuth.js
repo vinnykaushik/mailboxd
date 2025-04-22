@@ -1,7 +1,7 @@
 export const fetchGetWithAuth = async (url) => {
   try {
     const response = await fetch(url, {
-      credentials: "include", // Use the same credentials: "include" as in AuthContext
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -28,7 +28,7 @@ export const fetchPostWithAuth = async (url, data) => {
   try {
     const response = await fetch(url, {
       method: "POST",
-      credentials: "include", // Use the same credentials: "include" as in AuthContext
+      credentials: "include",
       headers: {
         Accept: "application/json",
         "Content-Type": "application/json",
@@ -54,15 +54,13 @@ export const fetchPostWithAuth = async (url, data) => {
 
 export const fetchWithAuth = async (url, options = {}) => {
   try {
-    const headers = {
-      ...options.headers,
-      Authorization: `Bearer ${localStorage.getItem("token")}`,
-    };
-
     const res = await fetch(url, {
       ...options,
-      headers,
       credentials: "include",
+      headers: {
+        ...options.headers,
+        "Content-Type": "application/json",
+      },
     });
 
     if (!res.ok) {
@@ -72,7 +70,6 @@ export const fetchWithAuth = async (url, options = {}) => {
       throw new Error(`Error: ${res.status}`);
     }
 
-    // Check if the response has content before trying to parse JSON
     const contentType = res.headers.get("content-type");
     if (contentType && contentType.includes("application/json")) {
       return await res.json();
