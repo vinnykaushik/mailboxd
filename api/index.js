@@ -254,7 +254,8 @@ app.put("/add-to-watchlist", requireAuth, async (req, res) => {
       where: { user_id: req.userId },
     });
 
-    if (watchlist) {
+    if (watchlist && !watchlist.movie_ids.includes(movieId)) {
+      // Check if the movie is already in the watchlist
       watchlist = await prisma.watchlist.update({
         where: { watchlist_id: watchlist.watchlist_id },
         data: {
@@ -355,7 +356,6 @@ app.delete("/reviews/:reviewId/delete", requireAuth, async (req, res) => {
   const { reviewId } = req.params;
 
   try {
-    // Find review to verify ownership
     const existingReview = await prisma.reviews.findUnique({
       where: {
         review_id: parseInt(reviewId),
@@ -366,14 +366,12 @@ app.delete("/reviews/:reviewId/delete", requireAuth, async (req, res) => {
       return res.status(404).json({ error: "Review not found" });
     }
 
-    // Verify the authenticated user owns this review
     if (existingReview.user_id !== req.userId) {
       return res
         .status(403)
         .json({ error: "Unauthorized to delete this review" });
     }
 
-    // Delete the review using just the review_id
     const deletedReview = await prisma.reviews.delete({
       where: {
         review_id: parseInt(reviewId),
@@ -453,11 +451,17 @@ app.get("/users/:id/reviews", async (req, res) => {
   const reviews = await prisma.reviews.findMany({
     where: { user_id: parseInt(req.params.id) },
     select: {
-      id: true,
-      content: true,
+      review_text: true,
+      created_at: true,
+      updated_at: true,
       rating: true,
       user_id: true,
       movie_id: true,
+      User: {
+        select: {
+          username: true,
+        },
+      },
     },
   });
   res.json(reviews);
